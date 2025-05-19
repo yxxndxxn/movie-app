@@ -2,7 +2,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Movies from "../screens/Movies";
 import Tv from "../screens/Tv";
 import Search from "../screens/Search";
-import { View, Text } from "react-native";
+import { View, Text, useColorScheme } from "react-native";
+import colors from "../colors";
 
 const Tab = createBottomTabNavigator();
 
@@ -10,8 +11,24 @@ const Tab = createBottomTabNavigator();
 //options은 navigator의 단 하나의 화면에 적용할 설정
 
 const Tabs = () => {
+  const isDark = useColorScheme() === "dark";
+  console.log(isDark);
   return (
-    <Tab.Navigator initialRouteName="Search">
+    <Tab.Navigator
+      screenOptions={{
+        tabBarStyle: {
+          backgroundColor: isDark ? colors.black : "white",
+        },
+        tabBarActiveTintColor: isDark ? colors.yellow : colors.black,
+        tabBarInactiveTintColor: isDark ? "#d2dae2" : "#808e9b",
+        headerStyle: {
+          backgroundColor: isDark ? colors.black : "white",
+        },
+        headerTitleStyle: {
+          color: isDark ? "white" : colors.black,
+        },
+      }}
+    >
       <Tab.Screen
         name="Movies"
         component={Movies}
