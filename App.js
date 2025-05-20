@@ -6,7 +6,7 @@ import Stack from "./navigation/Stacks";
 import Root from "./navigation/Root";
 import { useColorScheme } from "react-native";
 import { ThemeProvider } from "styled-components";
-import { darkTheme, lightTheme } from "./Styled";
+import { darkTheme, lightTheme } from "./myStyle";
 
 SplashScreen.preventAutoHideAsync();
 const isDark = useColorScheme() === "dark";
