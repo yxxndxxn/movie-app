@@ -5,6 +5,7 @@ import Search from "../screens/Search";
 import { View, Text, useColorScheme } from "react-native";
 import colors from "../colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Stack from "./Stacks";
 
 const Tab = createBottomTabNavigator();
 
@@ -35,7 +36,6 @@ const Tabs = () => {
         component={Movies}
         options={{
           tabBarIcon: ({ focused, color, size }) => {
-            console.log(focused, color, size);
             return <Ionicons name="film" color={color} size={size} />;
           },
         }}
@@ -46,7 +46,6 @@ const Tabs = () => {
         options={{
           tabBarBadge: 4,
           tabBarIcon: ({ focused, color, size }) => {
-            console.log(focused, color, size);
             return <Ionicons name="tv" color={color} size={size} />;
           },
         }}
@@ -56,7 +55,6 @@ const Tabs = () => {
         component={Search}
         options={{
           tabBarIcon: ({ focused, color, size }) => {
-            console.log(focused, color, size);
             return <Ionicons name="search" color={color} size={size} />;
           },
         }}
