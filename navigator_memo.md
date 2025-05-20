@@ -20,7 +20,7 @@
 } -->
 
 <TouchableOpacity onPress={() => navigate("Tabs", { screen: "Search" })}>
--> Tabs로 가서 serach 스크린으로 이동
+-> Tabs로 가서 search 스크린으로 이동
 
 구조도는
 Root{
