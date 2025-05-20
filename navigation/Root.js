@@ -6,6 +6,9 @@ import Stack from "./Stacks";
 const Nav = createNativeStackNavigator();
 
 const Root = () => {
+  //보통은 Navigator를 렌더링할 때 presentation을 변경해줌
+  //presentation: "modal"
+  //근데 안드로이드에서 모달이 안먹어ㅠㅠ
   return (
     <Nav.Navigator screenOptions={{ headerShown: false }}>
       <Nav.Screen name="Tabs" component={Tabs} />
