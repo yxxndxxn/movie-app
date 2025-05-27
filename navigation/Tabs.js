@@ -14,9 +14,11 @@ const Tab = createBottomTabNavigator();
 
 const Tabs = () => {
   const isDark = useColorScheme() === "dark";
-  console.log(isDark);
+
   return (
     <Tab.Navigator
+      //이게 왜 안 먹지ㅠㅠ?
+      // sceneContainerStyle={{ backgroundColor: isDark ? colors.black : "white" }}
       screenOptions={{
         tabBarStyle: {
           backgroundColor: isDark ? colors.black : "white",
