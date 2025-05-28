@@ -21,6 +21,69 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
 
   const [loading, setLoading] = useState(true);
   const [nowPlaying, setNowPlaying] = useState([]);
+  const [upcoming, setUpcoming] = useState([]);
+  const [trending, setTrending] = useState([]);
+
+  const getTreding = async () =>{
+    const url = 'https://api.themoviedb.org/3/trending/movie/week?language=KR';
+    const options = {
+      method: 'GET',
+      headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${API_KEY}`,
+    }
+  };
+
+     try {
+      const response = await fetch(url, options)
+        .then((res) => res.json())
+        .then((json) => {
+          console.log("API 응답:", json);
+          return json.results || [];
+        })
+        .catch((err) => {
+          console.error("API 에러:", err);
+          return []; 
+        });
+      
+      console.log("최종 데이터:", response);
+      setTrending(response);
+    } catch (error) {
+      console.error("전체 에러:", error);
+      setTrending([]);
+    }
+  }
+
+  const getUpcoming = async () =>{
+    const url =
+      "https://api.themoviedb.org/3/movie/upcoming?language=KR&page=1&region=KR";
+    const options = {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${API_KEY}`,
+      },
+    };
+
+     try {
+      const response = await fetch(url, options)
+        .then((res) => res.json())
+        .then((json) => {
+          console.log("API 응답:", json);
+          return json.results || [];
+        })
+        .catch((err) => {
+          console.error("API 에러:", err);
+          return []; 
+        });
+      
+      console.log("최종 데이터:", response);
+      setUpcoming(response);
+    } catch (error) {
+      console.error("전체 에러:", error);
+      setUpcoming([]);
+    }
+  }
 
   const getNowPlaying = async () => {
     const url =
@@ -38,25 +101,27 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
         .then((res) => res.json())
         .then((json) => {
           console.log("API 응답:", json);
-          // 여기서 results 배열을 반환해야 함!
           return json.results || [];
         })
         .catch((err) => {
           console.error("API 에러:", err);
-          return []; // 에러 시 빈 배열 반환
+          return []; 
         });
       
       console.log("최종 데이터:", response);
       setNowPlaying(response);
-      setLoading(false);
     } catch (error) {
       console.error("전체 에러:", error);
-      setNowPlaying([]); // 안전장치
-      setLoading(false);
+      setNowPlaying([]);
     }
   };
+
+  const getData = async()=>{
+    await Promise.all([getTreding(), getUpcoming(), getNowPlaying()])
+    setLoading(false)
+  }
   useEffect(() => {
-    getNowPlaying();
+    getData();
   }, []);
 
   return loading ? (
