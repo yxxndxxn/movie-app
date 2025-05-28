@@ -27,7 +27,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
 
   const getNowPlaying = async () => {
     const url =
-      "https://api.themoviedb.org/3/movie/now_playing?language=KR&page=1";
+      "https://api.themoviedb.org/3/movie/now_playing?language=KR&page=1&region=KR";
     const options = {
       method: "GET",
       headers: {
@@ -74,18 +74,28 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   ) : (
     <ScrollView style={{ backgroundColor: isDark ? colors.black : "white" }}>
       <Swiper
-        autoplay={true}
+        horizontal
         showsButtons={false}
-        autoplayTimeout={3.5}
+        showsPagination={false}
         loop
+        autoplay={true}
+        autoplayTimeout={3.5}
         containerStyle={{ width: "100%", height: SCREEN_HEIGHT / 4 }}
       >
         {nowPlaying.map(movie =>
         <View key={movie.id} style={{flex:1}}>
           <Image style={StyleSheet.absoluteFill} source ={{uri: makeImgPath(movie.backdrop_path)}}/>
-          <BlurView style={StyleSheet.absoluteFill}>
-            <Text>{movie.original_title}</Text>
+          <BlurView blurType = {isDark ? "dark" : "light"} blurAmount = { 8 }  style={StyleSheet.absoluteFill}>
+            <View style={styles.Wrapper}>
+              <Image style={styles.Poster} source={{uri:makeImgPath(movie.poster_path)}} />
+              <View style={styles.Column}>
+                <Text style={styles.Title}>{movie.original_title}</Text>
+                <Text style={styles.OverView}>{movie.overview.slice(0, 100)}...</Text>
+                {movie.vote_average > 0 ? (<Text style={styles.OverView}>⭐ {movie.vote_average}/10</Text>) : null}
+              </View>
+            </View>
           </BlurView>
+
         </View>)}
         
       </Swiper>
@@ -105,5 +115,28 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: "absolute"
-  }
+  },
+  Wrapper:{
+    flexDirection: "row",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  Poster:{
+    width: 100,
+    height: 160,
+  },
+  Column:{
+    width: "40%",
+    marginLeft: 20
+  },
+  Title:{
+    fontSize: 16,
+    fontWeight: 600,
+    color: "white"
+  },
+  OverView:{
+    marginTop: 10,
+    color: "rgba(255, 255, 255, 0.6)"
+  },
 });
