@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -16,23 +16,37 @@ import colors from "../colors";
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
 
-const url = "https://api.themoviedb.org/3/movie/now_playing?language=KR&page=1";
-const options = {
-  method: "GET",
-  headers: {
-    accept: "application/json",
-    Authorization: `Bearer ${API_KEY}`,
-  },
-};
-
-fetch(url, options)
-  .then((res) => res.json())
-  .then((json) => console.log(json))
-  .catch((err) => console.error(err));
-
 const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
-  const [loading, setLoading] = useState(false);
   const isDark = useColorScheme() === "dark";
+
+  const [loading, setLoading] = useState(true);
+  const [nowPlaying, setNowPlaying] = useState([]);
+  const getNowPlaying = async () => {
+    const url =
+      "https://api.themoviedb.org/3/movie/now_playing?language=KR&page=1";
+    const options = {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${API_KEY}`,
+      },
+    };
+
+    const response = await fetch(url, options)
+      .then((res) => res.json())
+      .then((json) => {
+        console.log(json);
+        // return json;
+      })
+      .catch((err) => console.error(err));
+    // setNowPlaying(response);
+    setLoading(false);
+    // console.log("콘솔", data);
+  };
+
+  useEffect(() => {
+    getNowPlaying();
+  }, []);
 
   return loading ? (
     <View
@@ -41,7 +55,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
         { backgroundColor: isDark ? colors.black : "white" },
       ]}
     >
-      <ActivityIndicator size={"large"} />
+      <ActivityIndicator />
     </View>
   ) : (
     <ScrollView style={{ backgroundColor: isDark ? colors.black : "white" }}>
