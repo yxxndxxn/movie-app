@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   useColorScheme,
 } from "react-native";
+import { BlurView } from "@react-native-community/blur";
 
 import Swiper from "react-native-swiper";
 import colors from "../colors";
@@ -35,17 +36,6 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
       },
     };
 
-  //   const response = await fetch(url, options)
-  //     .then((res) => res.json())
-  //     .then((json) => {
-  //       console.log(json);
-  //       return json;
-  //     })
-  //     .catch((err) => console.error(err));
-  //   setNowPlaying(response);
-  //   setLoading(false);
-  //   // console.log("콘솔", response);
-  // };
     try {
       const response = await fetch(url, options)
         .then((res) => res.json())
@@ -91,8 +81,11 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
         containerStyle={{ width: "100%", height: SCREEN_HEIGHT / 4 }}
       >
         {nowPlaying.map(movie =>
-        <View key={movie.id}>
-          <Image style={styles.BgImg} source ={{uri: makeImgPath(movie.backdrop_path)}}/>
+        <View key={movie.id} style={{flex:1}}>
+          <Image style={StyleSheet.absoluteFill} source ={{uri: makeImgPath(movie.backdrop_path)}}/>
+          <BlurView style={StyleSheet.absoluteFill}>
+            <Text>{movie.original_title}</Text>
+          </BlurView>
         </View>)}
         
       </Swiper>
@@ -108,32 +101,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  slide1: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#9DD6EB",
-  },
-  slide2: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#97CAE5",
-  },
-  slide3: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#92BBD9",
-  },
-  text: {
-    color: "#fff",
-    fontSize: 30,
-    fontWeight: "bold",
-  },
   BgImg:{
     width: '100%',
-    height: '100%', // 또는 구체적인 높이: height: SCREEN_HEIGHT / 4
-    resizeMode: 'cover',
+    height: '100%',
+    position: "absolute"
   }
 });
