@@ -38,15 +38,13 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
       const response = await fetch(url, options)
         .then((res) => res.json())
         .then((json) => {
-          console.log("API 응답:", json);
           return json.results || [];
         })
         .catch((err) => {
           console.error("API 에러:", err);
-          return []; 
+          return [];
         });
-      
-      console.log("최종 데이터:", response);
+
       setTrending(response);
     } catch (error) {
       console.error("전체 에러:", error);
@@ -69,15 +67,13 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
       const response = await fetch(url, options)
         .then((res) => res.json())
         .then((json) => {
-          console.log("API 응답:", json);
           return json.results || [];
         })
         .catch((err) => {
           console.error("API 에러:", err);
-          return []; 
+          return [];
         });
-      
-      console.log("최종 데이터:", response);
+
       setUpcoming(response);
     } catch (error) {
       console.error("전체 에러:", error);
@@ -100,15 +96,13 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
       const response = await fetch(url, options)
         .then((res) => res.json())
         .then((json) => {
-          console.log("API 응답:", json);
           return json.results || [];
         })
         .catch((err) => {
           console.error("API 에러:", err);
-          return []; 
+          return [];
         });
-      
-      console.log("최종 데이터:", response);
+
       setNowPlaying(response);
     } catch (error) {
       console.error("전체 에러:", error);
@@ -144,15 +138,15 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
         autoplayTimeout={3.5}
         containerStyle={{ width: "100%", height: SCREEN_HEIGHT / 4 }}
       >
-        {nowPlaying.map(movie => 
-        <Slide 
+        {nowPlaying.map(movie =>
+        <Slide
           key={movie.id}
           backdropPath={movie.backdrop_path}
           posterPath={movie.poster_path}
           originalTitle={movie.original_title}
           voteAverage={movie.vote_average}
           overview={movie.overview} />)}
-        
+
       </Swiper>
     </ScrollView>
   );

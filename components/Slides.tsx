@@ -1,7 +1,8 @@
-import React = require("react");
+import * as React from "react";
 import { View, Text, Image, StyleSheet, useColorScheme } from "react-native";
 import { makeImgPath } from "../utils";
 import { BlurView } from "@react-native-community/blur";
+import Poster from "./Poster";
 
 interface SlideProps{
 backdropPath: string; 
@@ -19,7 +20,7 @@ const Slide:React.FC<SlideProps> = ({backdropPath, posterPath, originalTitle, ov
           <Image style={StyleSheet.absoluteFill} source ={{uri: makeImgPath(backdropPath)}}/>
           <BlurView blurType = "dark" blurAmount = { 8 }  style={StyleSheet.absoluteFill}>
             <View style={styles.Wrapper}>
-              <Image style={styles.Poster} source={{uri:makeImgPath(posterPath)}} />
+              <Poster path={posterPath}/>
               <View style={styles.Column}>
                 <Text style={styles.Title}>{originalTitle}</Text>
                 <Text style={styles.OverView}>{overview.slice(0, 100)}...</Text>
@@ -43,10 +44,6 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center"
-  },
-  Poster:{
-    width: 100,
-    height: 160,
   },
   Column:{
     width: "40%",
