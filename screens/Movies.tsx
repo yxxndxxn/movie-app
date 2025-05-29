@@ -150,10 +150,11 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
           overview={movie.overview} />)}
 
       </Swiper>
+
       <View style={styles.ListContainer}>
         <Text style={styles.ListTitle}>Trending Movies</Text>
         {/*//스크롤뷰는 contentContainerStyle이라는 prop이 있다는걸 기억해!*/}
-        <ScrollView contentContainerStyle={{marginTop: 10, paddingHorizontal: 30, gap: 15}} horizontal showsHorizontalScrollIndicator={false}>{trending.map(movie => 
+        <ScrollView contentContainerStyle={{paddingHorizontal: 30, gap: 15}} horizontal showsHorizontalScrollIndicator={false}>{trending.map(movie => 
           <View key={movie.id}>
             <Poster path={movie.poster_path}/>
             <Text style={styles.Title}>{movie.original_title}</Text>
@@ -161,6 +162,18 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
           </View>)}
         </ScrollView>
       </View>
+      
+      <Text style={styles.ListTitle}>Comming soon</Text>
+      {upcoming.map((movie)=> (
+        <View style={styles.HMovie} key={movie.id}>
+          <Poster path={movie.poster_path}/>
+          <View style={styles.Hcolumn}>
+            <Text style={styles.Title}>{movie.original_title}</Text>
+            <Text style={styles.Date}>{new Date(movie.release_date).toLocaleDateString("ko")} 개봉</Text>
+            <Text style={styles.OverView}>{movie.overview !== "" && movie.overview.length > 120 ? `${movie.overview.slice(0, 120)}...`:  movie.overview}</Text>
+          </View>
+        </View>
+      ))}
     </ScrollView>
   );
 };
@@ -181,6 +194,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 600,
     marginLeft: 30,
+    marginBottom: 10,
   },
   Title:{
     marginTop: 5,
@@ -192,5 +206,26 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 12,
     color: "rgba(255, 255, 255, 0.6)"
+  },
+  HMovie:{
+    marginBottom: 30,
+    paddingVertical: 0,
+    paddingHorizontal: 30,
+    flexDirection: "row",
+  },
+  Hcolumn:{
+    marginLeft: 15,
+    width: "80%"
+  },
+  OverView:{
+    marginTop: 8,
+    width: "80%",
+    fontSize: 14,
+    color: "rgba(255, 255, 255, 0.6)"
+  },
+  Date:{
+    color: "white",
+    fontSize: 12,
+    marginVertical: 5
   }
 })
