@@ -7,11 +7,13 @@ import {
   Dimensions,
   ActivityIndicator,
   useColorScheme,
+  Text
 } from "react-native";
 
 import Swiper from "react-native-swiper";
 import colors from "../colors";
 import Slide from "../components/Slides";
+import Poster from "../components/Poster";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
@@ -24,7 +26,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   const [upcoming, setUpcoming] = useState([]);
   const [trending, setTrending] = useState([]);
 
-  const getTreding = async () =>{
+  const getTrending = async () =>{
     const url = 'https://api.themoviedb.org/3/trending/movie/week?language=KR';
     const options = {
       method: 'GET',
@@ -111,7 +113,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   };
 
   const getData = async()=>{
-    await Promise.all([getTreding(), getUpcoming(), getNowPlaying()])
+    await Promise.all([getTrending(), getUpcoming(), getNowPlaying()])
     setLoading(false)
   }
   useEffect(() => {
@@ -136,7 +138,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
         loop
         autoplay={true}
         autoplayTimeout={3.5}
-        containerStyle={{ width: "100%", height: SCREEN_HEIGHT / 4 }}
+        containerStyle={{ marginBottom: 30, width: "100%", height: SCREEN_HEIGHT / 4 }}
       >
         {nowPlaying.map(movie =>
         <Slide
@@ -148,6 +150,17 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
           overview={movie.overview} />)}
 
       </Swiper>
+      <View style={styles.ListContainer}>
+        <Text style={styles.ListTitle}>Trending Movies</Text>
+        {/*//스크롤뷰는 contentContainerStyle이라는 prop이 있다는걸 기억해!*/}
+        <ScrollView contentContainerStyle={{marginTop: 10, paddingHorizontal: 30, gap: 15}} horizontal showsHorizontalScrollIndicator={false}>{trending.map(movie => 
+          <View key={movie.id}>
+            <Poster path={movie.poster_path}/>
+            <Text style={styles.Title}>{movie.original_title}</Text>
+            <Text style={styles.Vote}>{movie.vote_average > 0 ? `⭐ ${movie.vote_average.toFixed(1)}/10` : `Comming soon`}</Text>
+          </View>)}
+        </ScrollView>
+      </View>
     </ScrollView>
   );
 };
@@ -159,5 +172,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  ListContainer:{
+    marginBottom: 40
+  },
+  ListTitle:{
+    color: "white",
+    fontSize: 18,
+    fontWeight: 600,
+    marginLeft: 30,
+  },
+  Title:{
+    marginTop: 5,
+    width: 100,
+    fontWeight: 500,
+    color:  "rgba(255, 255, 255, 0.6)"
+  },
+  Vote:{
+    marginTop: 4,
+    fontSize: 12,
+    color: "rgba(255, 255, 255, 0.6)"
   }
 })

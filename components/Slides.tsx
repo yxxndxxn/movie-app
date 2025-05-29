@@ -24,7 +24,7 @@ const Slide:React.FC<SlideProps> = ({backdropPath, posterPath, originalTitle, ov
               <View style={styles.Column}>
                 <Text style={styles.Title}>{originalTitle}</Text>
                 <Text style={styles.OverView}>{overview.slice(0, 100)}...</Text>
-                {voteAverage > 0 ? (<Text style={styles.Vote}>⭐ {voteAverage}/10</Text>) : null}
+                {voteAverage > 0 ? (<Text style={styles.Vote}>⭐ {voteAverage.toFixed(1)}/10</Text>) : null}
               </View>
             </View>
           </BlurView>
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   },
   Title:{
     fontSize: 18,
-    fontWeight: 600,
+    fontWeight: "600",
     color: "white"
   },
   OverView:{
