@@ -7,7 +7,7 @@ import {
   Dimensions,
   ActivityIndicator,
   useColorScheme,
-  Text
+  Text,
 } from "react-native";
 
 import Swiper from "react-native-swiper";
@@ -26,17 +26,17 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   const [upcoming, setUpcoming] = useState([]);
   const [trending, setTrending] = useState([]);
 
-  const getTrending = async () =>{
-    const url = 'https://api.themoviedb.org/3/trending/movie/week?language=KR';
+  const getTrending = async () => {
+    const url = "https://api.themoviedb.org/3/trending/movie/week?language=KR";
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: {
-      accept: 'application/json',
-      Authorization: `Bearer ${API_KEY}`,
-    }
-  };
+        accept: "application/json",
+        Authorization: `Bearer ${API_KEY}`,
+      },
+    };
 
-     try {
+    try {
       const response = await fetch(url, options)
         .then((res) => res.json())
         .then((json) => {
@@ -52,9 +52,9 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
       console.error("전체 에러:", error);
       setTrending([]);
     }
-  }
+  };
 
-  const getUpcoming = async () =>{
+  const getUpcoming = async () => {
     const url =
       "https://api.themoviedb.org/3/movie/upcoming?language=KR&page=1&region=KR";
     const options = {
@@ -65,7 +65,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
       },
     };
 
-     try {
+    try {
       const response = await fetch(url, options)
         .then((res) => res.json())
         .then((json) => {
@@ -81,7 +81,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
       console.error("전체 에러:", error);
       setUpcoming([]);
     }
-  }
+  };
 
   const getNowPlaying = async () => {
     const url =
@@ -112,10 +112,10 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
     }
   };
 
-  const getData = async()=>{
-    await Promise.all([getTrending(), getUpcoming(), getNowPlaying()])
-    setLoading(false)
-  }
+  const getData = async () => {
+    await Promise.all([getTrending(), getUpcoming(), getNowPlaying()]);
+    setLoading(false);
+  };
   useEffect(() => {
     getData();
   }, []);
@@ -138,39 +138,60 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
         loop
         autoplay={true}
         autoplayTimeout={3.5}
-        containerStyle={{ marginBottom: 30, width: "100%", height: SCREEN_HEIGHT / 4 }}
+        containerStyle={{
+          marginBottom: 30,
+          width: "100%",
+          height: SCREEN_HEIGHT / 4,
+        }}
       >
-        {nowPlaying.map(movie =>
-        <Slide
-          key={movie.id}
-          backdropPath={movie.backdrop_path}
-          posterPath={movie.poster_path}
-          originalTitle={movie.original_title}
-          voteAverage={movie.vote_average}
-          overview={movie.overview} />)}
-
+        {nowPlaying.map((movie) => (
+          <Slide
+            key={movie.id}
+            backdropPath={movie.backdrop_path}
+            posterPath={movie.poster_path}
+            originalTitle={movie.original_title}
+            voteAverage={movie.vote_average}
+            overview={movie.overview}
+          />
+        ))}
       </Swiper>
 
       <View style={styles.ListContainer}>
         <Text style={styles.ListTitle}>Trending Movies</Text>
-        {/*//스크롤뷰는 contentContainerStyle이라는 prop이 있다는걸 기억해!*/}
-        <ScrollView contentContainerStyle={{paddingHorizontal: 30, gap: 15}} horizontal showsHorizontalScrollIndicator={false}>{trending.map(movie => 
-          <View key={movie.id}>
-            <Poster path={movie.poster_path}/>
-            <Text style={styles.Title}>{movie.original_title}</Text>
-            <Text style={styles.Vote}>{movie.vote_average > 0 ? `⭐ ${movie.vote_average.toFixed(1)}/10` : `Comming soon`}</Text>
-          </View>)}
+        {/*스크롤뷰는 contentContainerStyle이라는 prop이 있다는걸 기억해!*/}
+        <ScrollView
+          contentContainerStyle={{ paddingHorizontal: 30, gap: 15 }}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        >
+          {trending.map((movie) => (
+            <View key={movie.id}>
+              <Poster path={movie.poster_path} />
+              <Text style={styles.Title}>{movie.original_title}</Text>
+              <Text style={styles.Vote}>
+                {movie.vote_average > 0
+                  ? `⭐ ${movie.vote_average.toFixed(1)}/10`
+                  : `Comming soon`}
+              </Text>
+            </View>
+          ))}
         </ScrollView>
       </View>
-      
+
       <Text style={styles.ListTitle}>Comming soon</Text>
-      {upcoming.map((movie)=> (
+      {upcoming.map((movie) => (
         <View style={styles.HMovie} key={movie.id}>
-          <Poster path={movie.poster_path}/>
+          <Poster path={movie.poster_path} />
           <View style={styles.Hcolumn}>
             <Text style={styles.Title}>{movie.original_title}</Text>
-            <Text style={styles.Date}>{new Date(movie.release_date).toLocaleDateString("ko")} 개봉</Text>
-            <Text style={styles.OverView}>{movie.overview !== "" && movie.overview.length > 120 ? `${movie.overview.slice(0, 120)}...`:  movie.overview}</Text>
+            <Text style={styles.Date}>
+              {new Date(movie.release_date).toLocaleDateString("ko")} 개봉
+            </Text>
+            <Text style={styles.OverView}>
+              {movie.overview !== "" && movie.overview.length > 120
+                ? `${movie.overview.slice(0, 120)}...`
+                : movie.overview}
+            </Text>
           </View>
         </View>
       ))}
@@ -186,46 +207,46 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  ListContainer:{
-    marginBottom: 40
+  ListContainer: {
+    marginBottom: 40,
   },
-  ListTitle:{
+  ListTitle: {
     color: "white",
     fontSize: 18,
     fontWeight: 600,
     marginLeft: 30,
     marginBottom: 10,
   },
-  Title:{
+  Title: {
     marginTop: 5,
     width: 100,
     fontWeight: 500,
-    color:  "rgba(255, 255, 255, 0.6)"
+    color: "rgba(255, 255, 255, 0.6)",
   },
-  Vote:{
+  Vote: {
     marginTop: 4,
     fontSize: 12,
-    color: "rgba(255, 255, 255, 0.6)"
+    color: "rgba(255, 255, 255, 0.6)",
   },
-  HMovie:{
+  HMovie: {
     marginBottom: 30,
     paddingVertical: 0,
     paddingHorizontal: 30,
     flexDirection: "row",
   },
-  Hcolumn:{
+  Hcolumn: {
     marginLeft: 15,
-    width: "80%"
+    width: "80%",
   },
-  OverView:{
+  OverView: {
     marginTop: 8,
     width: "80%",
     fontSize: 14,
-    color: "rgba(255, 255, 255, 0.6)"
+    color: "rgba(255, 255, 255, 0.6)",
   },
-  Date:{
+  Date: {
     color: "white",
     fontSize: 12,
-    marginVertical: 5
-  }
-})
+    marginVertical: 5,
+  },
+});
