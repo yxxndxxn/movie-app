@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   useColorScheme,
   Text,
+  RefreshControl,
 } from "react-native";
 
 import Swiper from "react-native-swiper";
@@ -21,6 +22,7 @@ const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
 const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   const isDark = useColorScheme() === "dark";
 
+  const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [nowPlaying, setNowPlaying] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
@@ -116,21 +118,35 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
     await Promise.all([getTrending(), getUpcoming(), getNowPlaying()]);
     setLoading(false);
   };
+
   useEffect(() => {
     getData();
   }, []);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    //새로고침 하면 API에서 데이터 가져오고 다시 false..
+    await getData();
+    setRefreshing(false);
+  };
+
   return loading ? (
     <View
       style={[
-        styles.loader,
+        styles.Loader,
         { backgroundColor: isDark ? colors.black : "white" },
       ]}
     >
       <ActivityIndicator />
     </View>
   ) : (
-    <ScrollView style={{ backgroundColor: isDark ? colors.black : "white" }}>
+    <ScrollView
+      //새로고침 props -> refreshControl, 이 안에 컴포넌트 넣어햐함!(RefreshControl)
+      refreshControl={
+        <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+      }
+      style={{ backgroundColor: isDark ? colors.black : "white" }}
+    >
       <Swiper
         horizontal
         showsButtons={false}
@@ -202,7 +218,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
 export default Movies;
 
 const styles = StyleSheet.create({
-  loader: {
+  Loader: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
