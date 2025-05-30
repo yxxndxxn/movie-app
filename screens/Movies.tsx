@@ -14,7 +14,8 @@ import {
 import Swiper from "react-native-swiper";
 import colors from "../colors";
 import Slide from "../components/Slides";
-import Poster from "../components/Poster";
+import VMedia from "../components/VMedia";
+import HMedia from "../components/HMedia";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
@@ -181,35 +182,25 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
           showsHorizontalScrollIndicator={false}
         >
           {trending.map((movie) => (
-            <View key={movie.id}>
-              <Poster path={movie.poster_path} />
-              <Text style={styles.Title}>{movie.original_title}</Text>
-              <Text style={styles.Vote}>
-                {movie.vote_average > 0
-                  ? `⭐ ${movie.vote_average.toFixed(1)}/10`
-                  : `Comming soon`}
-              </Text>
-            </View>
+            <VMedia
+              key={movie.id}
+              posterPath={movie.poster_path}
+              originalTitle={movie.original_title}
+              voteAverage={movie.vote_average}
+            />
           ))}
         </ScrollView>
       </View>
 
       <Text style={styles.ListTitle}>Comming soon</Text>
       {upcoming.map((movie) => (
-        <View style={styles.HMovie} key={movie.id}>
-          <Poster path={movie.poster_path} />
-          <View style={styles.Hcolumn}>
-            <Text style={styles.Title}>{movie.original_title}</Text>
-            <Text style={styles.Date}>
-              {new Date(movie.release_date).toLocaleDateString("ko")} 개봉
-            </Text>
-            <Text style={styles.OverView}>
-              {movie.overview !== "" && movie.overview.length > 120
-                ? `${movie.overview.slice(0, 120)}...`
-                : movie.overview}
-            </Text>
-          </View>
-        </View>
+        <HMedia
+          key={movie.id}
+          posterPath={movie.poster_path}
+          originalTitle={movie.original_title}
+          releaseDate={movie.release_date}
+          overview={movie.overview}
+        />
       ))}
     </ScrollView>
   );
@@ -232,37 +223,5 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     marginLeft: 30,
     marginBottom: 10,
-  },
-  Title: {
-    marginTop: 5,
-    width: 100,
-    fontWeight: 500,
-    color: "rgba(255, 255, 255, 0.6)",
-  },
-  Vote: {
-    marginTop: 4,
-    fontSize: 12,
-    color: "rgba(255, 255, 255, 0.6)",
-  },
-  HMovie: {
-    marginBottom: 30,
-    paddingVertical: 0,
-    paddingHorizontal: 30,
-    flexDirection: "row",
-  },
-  Hcolumn: {
-    marginLeft: 15,
-    width: "80%",
-  },
-  OverView: {
-    marginTop: 8,
-    width: "80%",
-    fontSize: 14,
-    color: "rgba(255, 255, 255, 0.6)",
-  },
-  Date: {
-    color: "white",
-    fontSize: 12,
-    marginVertical: 5,
   },
 });
