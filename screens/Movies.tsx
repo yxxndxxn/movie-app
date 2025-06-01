@@ -9,6 +9,7 @@ import {
   useColorScheme,
   Text,
   RefreshControl,
+  FlatList,
 } from "react-native";
 
 import Swiper from "react-native-swiper";
@@ -175,21 +176,21 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
 
       <View style={styles.ListContainer}>
         <Text style={styles.ListTitle}>Trending Movies</Text>
-        {/*스크롤뷰는 contentContainerStyle이라는 prop이 있다는걸 기억해!*/}
-        <ScrollView
+        <FlatList
           contentContainerStyle={{ paddingHorizontal: 30, gap: 15 }}
           horizontal
           showsHorizontalScrollIndicator={false}
-        >
-          {trending.map((movie) => (
+          data={trending}
+          ItemSeparatorComponent={}
+          renderItem={({ item }) => (
             <VMedia
-              key={movie.id}
-              posterPath={movie.poster_path}
-              originalTitle={movie.original_title}
-              voteAverage={movie.vote_average}
+              posterPath={item.poster_path}
+              originalTitle={item.original_title}
+              voteAverage={item.vote_average}
             />
-          ))}
-        </ScrollView>
+          )}
+        />
+
       </View>
 
       <Text style={styles.ListTitle}>Comming soon</Text>
