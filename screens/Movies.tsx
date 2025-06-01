@@ -177,11 +177,13 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
       <View style={styles.ListContainer}>
         <Text style={styles.ListTitle}>Trending Movies</Text>
         <FlatList
-          contentContainerStyle={{ paddingHorizontal: 30, gap: 15 }}
+          contentContainerStyle={{ paddingHorizontal: 30 }}
           horizontal
           showsHorizontalScrollIndicator={false}
           data={trending}
-          ItemSeparatorComponent={}
+          //gap 대신 ItemSeparatorComponent-> 사이에 컴포넌트를 넣어주는 역할.? 여기서는 공백이 컴포넌트로 되는거지
+          //그리고 마지막에는 들어가지 않게 해서 gap과 똑같이 요소 사이에만 적용됨!
+          ItemSeparatorComponent={() => <View style={{ width: 15 }} />}
           renderItem={({ item }) => (
             <VMedia
               posterPath={item.poster_path}
@@ -190,7 +192,6 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
             />
           )}
         />
-
       </View>
 
       <Text style={styles.ListTitle}>Comming soon</Text>
