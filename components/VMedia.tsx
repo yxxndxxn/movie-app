@@ -16,7 +16,11 @@ const VMedia: React.FC<VMediaProps> = ({
   return (
     <View>
       <Poster path={posterPath} />
-      <Text style={styles.Title}>{originalTitle}</Text>
+      <Text style={styles.Title}>
+        {originalTitle.length > 20
+          ? `${originalTitle.slice(0, 20)}...`
+          : originalTitle}
+      </Text>
       <Votes votes={voteAverage} />
     </View>
   );

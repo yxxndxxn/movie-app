@@ -142,69 +142,78 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
       <ActivityIndicator />
     </View>
   ) : (
-    <ScrollView
-      //새로고침 props -> refreshControl, 이 안에 컴포넌트 넣어햐함!(RefreshControl)
-      refreshControl={
-        <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+    /*FlatList는 ScrollView에 기반해서 만들어진 컴포넌트! */
+    <FlatList
+      onRefresh={onRefresh}
+      refreshing={refreshing}
+      /*FlatList Header에 FlatList를 render하는 FlatList의 구조인거임 */
+      ListHeaderComponent={
+        <>
+          <Swiper
+            horizontal
+            showsButtons={false}
+            showsPagination={false}
+            loop
+            autoplay={true}
+            autoplayTimeout={3.5}
+            containerStyle={{
+              marginBottom: 30,
+              width: "100%",
+              height: SCREEN_HEIGHT / 4,
+            }}
+          >
+            {nowPlaying.map((movie) => (
+              <Slide
+                key={movie.id}
+                backdropPath={movie.backdrop_path}
+                posterPath={movie.poster_path}
+                originalTitle={movie.original_title}
+                voteAverage={movie.vote_average}
+                overview={movie.overview}
+              />
+            ))}
+          </Swiper>
+
+          <View style={styles.ListContainer}>
+            <Text style={styles.ListTitle}>Trending Movies</Text>
+            <FlatList
+              contentContainerStyle={{ paddingHorizontal: 30 }}
+              horizontal
+              //keyExtractor: item을 받아오는데, item의 어떤 부분을 key로 삼을 건지 반환하는 역할
+              //근데 난 이거 안 넣어도 작동 잘 되는듯ㅠㅠ
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+              data={trending}
+              //gap 대신 ItemSeparatorComponent-> 사이에 컴포넌트를 넣어주는 역할.? 여기서는 공백이 컴포넌트로 되는거지
+              //그리고 마지막에는 들어가지 않게 해서 gap과 똑같이 요소 사이에만 적용됨!
+              //함수가 들어가기 때문에, 공백 말고도 이미지나 원하는 무언가를 넣을 수 있어서 숱한 디자인 변경시에 용이함
+              ItemSeparatorComponent={() => <View style={{ width: 15 }} />} //그니까 이게 gap인거지 안에 공백 말고도 무엇이든 넣을 수 있는 gap..
+              renderItem={({ item }) => (
+                <VMedia
+                  posterPath={item.poster_path}
+                  originalTitle={item.original_title}
+                  voteAverage={item.vote_average}
+                />
+              )}
+            />
+          </View>
+
+          <Text style={styles.ListTitle}>Coming soon</Text>
+        </>
       }
       style={{ backgroundColor: isDark ? colors.black : "white" }}
-    >
-      <Swiper
-        horizontal
-        showsButtons={false}
-        showsPagination={false}
-        loop
-        autoplay={true}
-        autoplayTimeout={3.5}
-        containerStyle={{
-          marginBottom: 30,
-          width: "100%",
-          height: SCREEN_HEIGHT / 4,
-        }}
-      >
-        {nowPlaying.map((movie) => (
-          <Slide
-            key={movie.id}
-            backdropPath={movie.backdrop_path}
-            posterPath={movie.poster_path}
-            originalTitle={movie.original_title}
-            voteAverage={movie.vote_average}
-            overview={movie.overview}
-          />
-        ))}
-      </Swiper>
-
-      <View style={styles.ListContainer}>
-        <Text style={styles.ListTitle}>Trending Movies</Text>
-        <FlatList
-          contentContainerStyle={{ paddingHorizontal: 30 }}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={trending}
-          //gap 대신 ItemSeparatorComponent-> 사이에 컴포넌트를 넣어주는 역할.? 여기서는 공백이 컴포넌트로 되는거지
-          //그리고 마지막에는 들어가지 않게 해서 gap과 똑같이 요소 사이에만 적용됨!
-          ItemSeparatorComponent={() => <View style={{ width: 15 }} />}
-          renderItem={({ item }) => (
-            <VMedia
-              posterPath={item.poster_path}
-              originalTitle={item.original_title}
-              voteAverage={item.vote_average}
-            />
-          )}
-        />
-      </View>
-
-      <Text style={styles.ListTitle}>Comming soon</Text>
-      {upcoming.map((movie) => (
+      data={upcoming}
+      keyExtractor={(item) => item.id}
+      ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
+      renderItem={({ item }) => (
         <HMedia
-          key={movie.id}
-          posterPath={movie.poster_path}
-          originalTitle={movie.original_title}
-          releaseDate={movie.release_date}
-          overview={movie.overview}
+          posterPath={item.poster_path}
+          originalTitle={item.original_title}
+          releaseDate={item.release_date}
+          overview={item.overview}
         />
-      ))}
-    </ScrollView>
+      )}
+    />
   );
 };
 

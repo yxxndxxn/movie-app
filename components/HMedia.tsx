@@ -38,7 +38,6 @@ export default HMedia;
 
 const styles = StyleSheet.create({
   HMovie: {
-    marginBottom: 30,
     paddingVertical: 0,
     paddingHorizontal: 30,
     flexDirection: "row",
