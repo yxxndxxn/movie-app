@@ -15,7 +15,7 @@ import Slide from "../components/Slides";
 import VMedia from "../components/VMedia";
 import HMedia from "../components/HMedia";
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
-import { moviesAPI } from "../api";
+import { MovieResponse, moviesAPI } from "../api";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -31,7 +31,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
     isLoading: nowPlayingLoading,
     data: nowPlayingData,
     isRefetching: isRefetchNowPlaying, //fetch 다시하는거 boolean으로
-  } = useQuery({
+  } = useQuery<MovieResponse>({
     queryKey: [
       "movies",
       "nowPlaying",
@@ -46,7 +46,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
     isLoading: upcomingLoading,
     data: upcomingData,
     isRefetching: isRefetchUpcomingData,
-  } = useQuery({
+  } = useQuery<MovieResponse>({
     queryKey: ["movies", "upcoming"],
     queryFn: moviesAPI.upcoming,
   });
@@ -54,7 +54,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
     isLoading: trendingLoading,
     data: trendingData,
     isRefetching: isRefetchTrendingData,
-  } = useQuery({
+  } = useQuery<MovieResponse>({
     queryKey: ["movies", "trending"],
     queryFn: moviesAPI.trending,
   });
@@ -63,23 +63,6 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
     queryClient.refetchQueries({ queryKey: ["movies"] });
     //movies 키를 가진 쿼리들은 전부 refetch 할 수 있다는 것
   };
-
-  const renderVMedia = ({ item }) => (
-    <VMedia
-      posterPath={item.poster_path}
-      originalTitle={item.original_title}
-      voteAverage={item.vote_average}
-    />
-  );
-
-  const renderHMedia = ({ item }) => (
-    <HMedia
-      posterPath={item.poster_path}
-      originalTitle={item.original_title}
-      releaseDate={item.release_date}
-      overview={item.overview}
-    />
-  );
 
   const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
   const refreshing =
@@ -93,8 +76,8 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
     >
       <ActivityIndicator />
     </View>
-  ) : (
-    /*FlatList는 ScrollView에 기반해서 만들어진 컴포넌트! */
+  ) : /*FlatList는 ScrollView에 기반해서 만들어진 컴포넌트! */
+  upcomingData ? (
     <FlatList
       onRefresh={onRefresh}
       refreshing={refreshing}
@@ -114,11 +97,11 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
               height: SCREEN_HEIGHT / 4,
             }}
           >
-            {nowPlayingData.results.map((movie) => (
+            {nowPlayingData?.results.map((movie) => (
               <Slide
                 key={movie.id}
-                backdropPath={movie.backdrop_path}
-                posterPath={movie.poster_path}
+                backdropPath={movie.backdrop_path || ""}
+                posterPath={movie.poster_path || ""}
                 originalTitle={movie.original_title}
                 voteAverage={movie.vote_average}
                 overview={movie.overview}
@@ -128,20 +111,30 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
 
           <View style={styles.ListContainer}>
             <Text style={styles.ListTitle}>Trending Movies</Text>
-            <FlatList
-              contentContainerStyle={{ paddingHorizontal: 30 }}
-              horizontal
-              //keyExtractor: item을 받아오는데, item의 어떤 부분을 key로 삼을 건지 반환하는 역할
-              //근데 난 이거 안 넣어도 작동 잘 되는듯ㅠㅠ
-              keyExtractor={(item) => item.id}
-              showsHorizontalScrollIndicator={false}
-              data={trendingData.results}
-              //gap 대신 ItemSeparatorComponent-> 사이에 컴포넌트를 넣어주는 역할.? 여기서는 공백이 컴포넌트로 되는거지
-              //그리고 마지막에는 들어가지 않게 해서 gap과 똑같이 요소 사이에만 적용됨!
-              //함수가 들어가기 때문에, 공백 말고도 이미지나 원하는 무언가를 넣을 수 있어서 숱한 디자인 변경시에 용이함
-              ItemSeparatorComponent={() => <View style={styles.VSeperator} />} //그니까 이게 gap인거지 안에 공백 말고도 무엇이든 넣을 수 있는 gap..
-              renderItem={renderVMedia}
-            />
+            {trendingData ? (
+              <FlatList
+                contentContainerStyle={{ paddingHorizontal: 30 }}
+                horizontal
+                //keyExtractor: item을 받아오는데, item의 어떤 부분을 key로 삼을 건지 반환하는 역할
+                //근데 난 이거 안 넣어도 작동 잘 되는듯ㅠㅠ
+                keyExtractor={(item) => item.id + ""}
+                showsHorizontalScrollIndicator={false}
+                data={trendingData.results}
+                //gap 대신 ItemSeparatorComponent-> 사이에 컴포넌트를 넣어주는 역할.? 여기서는 공백이 컴포넌트로 되는거지
+                //그리고 마지막에는 들어가지 않게 해서 gap과 똑같이 요소 사이에만 적용됨!
+                //함수가 들어가기 때문에, 공백 말고도 이미지나 원하는 무언가를 넣을 수 있어서 숱한 디자인 변경시에 용이함
+                ItemSeparatorComponent={() => (
+                  <View style={styles.VSeperator} />
+                )} //그니까 이게 gap인거지 안에 공백 말고도 무엇이든 넣을 수 있는 gap..
+                renderItem={({ item }) => (
+                  <VMedia
+                    posterPath={item.poster_path}
+                    originalTitle={item.original_title}
+                    voteAverage={item.vote_average}
+                  />
+                )}
+              />
+            ) : null}
           </View>
 
           <Text style={styles.ListTitle}>Coming soon</Text>
@@ -149,11 +142,18 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
       }
       style={{ backgroundColor: isDark ? colors.black : "white" }}
       data={upcomingData.results}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.id + ""}
       ItemSeparatorComponent={() => <View style={styles.HSeperator} />}
-      renderItem={renderHMedia}
+      renderItem={({ item }) => (
+        <HMedia
+          posterPath={item.poster_path}
+          originalTitle={item.original_title}
+          releaseDate={item.release_date}
+          overview={item.overview}
+        />
+      )}
     />
-  );
+  ) : null;
 };
 
 export default Movies;
