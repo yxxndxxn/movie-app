@@ -15,7 +15,7 @@ import Slide from "../components/Slides";
 import VMedia from "../components/VMedia";
 import HMedia from "../components/HMedia";
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MovieResponse, moviesAPI } from "../api";
+import { Movie, MovieResponse, moviesAPI } from "../api";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -63,6 +63,23 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
     queryClient.refetchQueries({ queryKey: ["movies"] });
     //movies 키를 가진 쿼리들은 전부 refetch 할 수 있다는 것
   };
+
+  const renderVMedia = ({ item }: { item: Movie }) => (
+    <VMedia
+      posterPath={item.poster_path}
+      originalTitle={item.original_title}
+      voteAverage={item.vote_average}
+    />
+  );
+
+  const renderHMedia = ({ item }: { item: Movie }) => (
+    <HMedia
+      posterPath={item.poster_path}
+      originalTitle={item.original_title}
+      releaseDate={item.release_date}
+      overview={item.overview}
+    />
+  );
 
   const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
   const refreshing =
@@ -126,13 +143,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
                 ItemSeparatorComponent={() => (
                   <View style={styles.VSeperator} />
                 )} //그니까 이게 gap인거지 안에 공백 말고도 무엇이든 넣을 수 있는 gap..
-                renderItem={({ item }) => (
-                  <VMedia
-                    posterPath={item.poster_path}
-                    originalTitle={item.original_title}
-                    voteAverage={item.vote_average}
-                  />
-                )}
+                renderItem={renderVMedia}
               />
             ) : null}
           </View>
@@ -144,14 +155,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
       data={upcomingData.results}
       keyExtractor={(item) => item.id + ""}
       ItemSeparatorComponent={() => <View style={styles.HSeperator} />}
-      renderItem={({ item }) => (
-        <HMedia
-          posterPath={item.poster_path}
-          originalTitle={item.original_title}
-          releaseDate={item.release_date}
-          overview={item.overview}
-        />
-      )}
+      renderItem={renderHMedia}
     />
   ) : null;
 };
