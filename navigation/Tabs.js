@@ -20,6 +20,7 @@ const Tabs = () => {
       //이게 왜 안 먹지ㅠㅠ?
       // sceneContainerStyle={{ backgroundColor: isDark ? colors.black : "white" }}
       screenOptions={{
+        unmountOnBlur: true, //화면을 나갔을 때(unmount됐을 때 메모리 안 쓰도록 죽임(?))
         tabBarStyle: {
           backgroundColor: isDark ? colors.black : "white",
         },

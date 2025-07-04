@@ -1,14 +1,11 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
-  ScrollView,
   Dimensions,
   ActivityIndicator,
   useColorScheme,
   Text,
-  RefreshControl,
   FlatList,
 } from "react-native";
 
@@ -17,121 +14,76 @@ import colors from "../colors";
 import Slide from "../components/Slides";
 import VMedia from "../components/VMedia";
 import HMedia from "../components/HMedia";
+import { useQuery } from "@tanstack/react-query";
+import { moviesAPI } from "../api";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
 
 const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   const isDark = useColorScheme() === "dark";
-
-  const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [nowPlaying, setNowPlaying] = useState([]);
-  const [upcoming, setUpcoming] = useState([]);
-  const [trending, setTrending] = useState([]);
-
-  const getTrending = async () => {
-    const url = "https://api.themoviedb.org/3/trending/movie/week?language=KR";
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-      },
-    };
-
-    try {
-      const response = await fetch(url, options)
-        .then((res) => res.json())
-        .then((json) => {
-          return json.results || [];
-        })
-        .catch((err) => {
-          console.error("API 에러:", err);
-          return [];
-        });
-
-      setTrending(response);
-    } catch (error) {
-      console.error("전체 에러:", error);
-      setTrending([]);
-    }
-  };
-
-  const getUpcoming = async () => {
-    const url =
-      "https://api.themoviedb.org/3/movie/upcoming?language=KR&page=1&region=KR";
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-      },
-    };
-
-    try {
-      const response = await fetch(url, options)
-        .then((res) => res.json())
-        .then((json) => {
-          return json.results || [];
-        })
-        .catch((err) => {
-          console.error("API 에러:", err);
-          return [];
-        });
-
-      setUpcoming(response);
-    } catch (error) {
-      console.error("전체 에러:", error);
-      setUpcoming([]);
-    }
-  };
-
-  const getNowPlaying = async () => {
-    const url =
-      "https://api.themoviedb.org/3/movie/now_playing?language=KR&page=1&region=KR";
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-      },
-    };
-
-    try {
-      const response = await fetch(url, options)
-        .then((res) => res.json())
-        .then((json) => {
-          return json.results || [];
-        })
-        .catch((err) => {
-          console.error("API 에러:", err);
-          return [];
-        });
-
-      setNowPlaying(response);
-    } catch (error) {
-      console.error("전체 에러:", error);
-      setNowPlaying([]);
-    }
-  };
-
-  const getData = async () => {
-    await Promise.all([getTrending(), getUpcoming(), getNowPlaying()]);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    getData();
-  }, []);
+  /*이전 코드(tanstack query 쓰기 전)은 mount 될 때마다 fetch를 하지만
+  tanstack query는 한 번 fetch하면 그 뒤론 fetch 안 함
+  -> 나갔다가 돌아와도 data 유지됨, 데이터 사라지지 않음!
+  -> 아마 이미지는 다시 로드해야 할 지두
+  tanstack query와 'unmountOnBlur: true'를 같이 쓰면 메모리도 아끼고 굳~*/
+  const {
+    isLoading: nowPlayingLoading,
+    data: nowPlayingData,
+    refetch: refetchNowPlaying, //fetch 다시하는거임
+    isRefetching: isRefetchNowPlaying, //fetch 다시하는거 boolean으로
+  } = useQuery({
+    queryKey: [
+      "nowPlaying",
+    ] /*query key가 필요한 이유: react Query가 가지고 있는 caching system 때문 
+     -> nowPlaying이란 이름을 가진 쿼리가 캐시에 넣어진다~
+     -> 그저 데이터를 cache에 저장하는 방식임*/,
+    queryFn: moviesAPI.nowPlaying,
+  });
+  const {
+    isLoading: upcomingLoading,
+    data: upcomingData,
+    refetch: refetchUpcomingData,
+    isRefetching: isRefetchUpcomingData,
+  } = useQuery({
+    queryKey: ["upcoming"],
+    queryFn: moviesAPI.upcoming,
+  });
+  const {
+    isLoading: trendingLoading,
+    data: trendingData,
+    refetch: refetchTrendingData,
+    isRefetching: isRefetchTrendingData,
+  } = useQuery({
+    queryKey: ["trending"],
+    queryFn: moviesAPI.trending,
+  });
 
   const onRefresh = async () => {
-    setRefreshing(true);
-    //새로고침 하면 API에서 데이터 가져오고 다시 false..
-    await getData();
-    setRefreshing(false);
+    refetchNowPlaying();
+    refetchUpcomingData();
+    refetchTrendingData();
   };
 
+  const renderVMedia = ({ item }) => (
+    <VMedia
+      posterPath={item.poster_path}
+      originalTitle={item.original_title}
+      voteAverage={item.vote_average}
+    />
+  );
+
+  const renderHMedia = ({ item }) => (
+    <HMedia
+      posterPath={item.poster_path}
+      originalTitle={item.original_title}
+      releaseDate={item.release_date}
+      overview={item.overview}
+    />
+  );
+
+  const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
+  const refreshing =
+    isRefetchNowPlaying || isRefetchUpcomingData || isRefetchTrendingData;
   return loading ? (
     <View
       style={[
@@ -162,7 +114,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
               height: SCREEN_HEIGHT / 4,
             }}
           >
-            {nowPlaying.map((movie) => (
+            {nowPlayingData.results.map((movie) => (
               <Slide
                 key={movie.id}
                 backdropPath={movie.backdrop_path}
@@ -183,18 +135,12 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
               //근데 난 이거 안 넣어도 작동 잘 되는듯ㅠㅠ
               keyExtractor={(item) => item.id}
               showsHorizontalScrollIndicator={false}
-              data={trending}
+              data={trendingData.results}
               //gap 대신 ItemSeparatorComponent-> 사이에 컴포넌트를 넣어주는 역할.? 여기서는 공백이 컴포넌트로 되는거지
               //그리고 마지막에는 들어가지 않게 해서 gap과 똑같이 요소 사이에만 적용됨!
               //함수가 들어가기 때문에, 공백 말고도 이미지나 원하는 무언가를 넣을 수 있어서 숱한 디자인 변경시에 용이함
-              ItemSeparatorComponent={() => <View style={{ width: 15 }} />} //그니까 이게 gap인거지 안에 공백 말고도 무엇이든 넣을 수 있는 gap..
-              renderItem={({ item }) => (
-                <VMedia
-                  posterPath={item.poster_path}
-                  originalTitle={item.original_title}
-                  voteAverage={item.vote_average}
-                />
-              )}
+              ItemSeparatorComponent={() => <View style={styles.VSeperator} />} //그니까 이게 gap인거지 안에 공백 말고도 무엇이든 넣을 수 있는 gap..
+              renderItem={renderVMedia}
             />
           </View>
 
@@ -202,17 +148,10 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
         </>
       }
       style={{ backgroundColor: isDark ? colors.black : "white" }}
-      data={upcoming}
+      data={upcomingData.results}
       keyExtractor={(item) => item.id}
-      ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
-      renderItem={({ item }) => (
-        <HMedia
-          posterPath={item.poster_path}
-          originalTitle={item.original_title}
-          releaseDate={item.release_date}
-          overview={item.overview}
-        />
-      )}
+      ItemSeparatorComponent={() => <View style={styles.HSeperator} />}
+      renderItem={renderHMedia}
     />
   );
 };
@@ -234,5 +173,11 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     marginLeft: 30,
     marginBottom: 10,
+  },
+  VSeperator: {
+    width: 20,
+  },
+  HSeperator: {
+    height: 15,
   },
 });
