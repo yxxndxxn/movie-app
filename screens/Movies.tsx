@@ -14,7 +14,7 @@ import colors from "../colors";
 import Slide from "../components/Slides";
 import VMedia from "../components/VMedia";
 import HMedia from "../components/HMedia";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import { moviesAPI } from "../api";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -26,42 +26,42 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   -> 나갔다가 돌아와도 data 유지됨, 데이터 사라지지 않음!
   -> 아마 이미지는 다시 로드해야 할 지두
   tanstack query와 'unmountOnBlur: true'를 같이 쓰면 메모리도 아끼고 굳~*/
+  const queryClient = useQueryClient(); //모든 쿼리들을 관리해요 #3.14 강의
   const {
     isLoading: nowPlayingLoading,
     data: nowPlayingData,
-    refetch: refetchNowPlaying, //fetch 다시하는거임
     isRefetching: isRefetchNowPlaying, //fetch 다시하는거 boolean으로
   } = useQuery({
     queryKey: [
+      "movies",
       "nowPlaying",
     ] /*query key가 필요한 이유: react Query가 가지고 있는 caching system 때문 
      -> nowPlaying이란 이름을 가진 쿼리가 캐시에 넣어진다~
-     -> 그저 데이터를 cache에 저장하는 방식임*/,
+     -> 그저 데이터를 cache에 저장하는 방식임
+     -> query key는 반드시 배열이어야 함!!!
+     */,
     queryFn: moviesAPI.nowPlaying,
   });
   const {
     isLoading: upcomingLoading,
     data: upcomingData,
-    refetch: refetchUpcomingData,
     isRefetching: isRefetchUpcomingData,
   } = useQuery({
-    queryKey: ["upcoming"],
+    queryKey: ["movies", "upcoming"],
     queryFn: moviesAPI.upcoming,
   });
   const {
     isLoading: trendingLoading,
     data: trendingData,
-    refetch: refetchTrendingData,
     isRefetching: isRefetchTrendingData,
   } = useQuery({
-    queryKey: ["trending"],
+    queryKey: ["movies", "trending"],
     queryFn: moviesAPI.trending,
   });
 
   const onRefresh = async () => {
-    refetchNowPlaying();
-    refetchUpcomingData();
-    refetchTrendingData();
+    queryClient.refetchQueries({ queryKey: ["movies"] });
+    //movies 키를 가진 쿼리들은 전부 refetch 할 수 있다는 것
   };
 
   const renderVMedia = ({ item }) => (
