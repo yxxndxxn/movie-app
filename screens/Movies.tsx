@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   Dimensions,
-  ActivityIndicator,
   useColorScheme,
   Text,
   FlatList,
@@ -16,6 +15,7 @@ import VMedia from "../components/VMedia";
 import HMedia from "../components/HMedia";
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Movie, MovieResponse, moviesAPI } from "../api";
+import Loader from "../components/Loader";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -84,15 +84,9 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
   const refreshing =
     isRefetchNowPlaying || isRefetchUpcomingData || isRefetchTrendingData;
+
   return loading ? (
-    <View
-      style={[
-        styles.Loader,
-        { backgroundColor: isDark ? colors.black : "white" },
-      ]}
-    >
-      <ActivityIndicator />
-    </View>
+    <Loader />
   ) : /*FlatList는 ScrollView에 기반해서 만들어진 컴포넌트! */
   upcomingData ? (
     <FlatList
@@ -182,6 +176,6 @@ const styles = StyleSheet.create({
     width: 20,
   },
   HSeperator: {
-    height: 15,
+    height: 20,
   },
 });

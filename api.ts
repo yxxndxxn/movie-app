@@ -33,6 +33,8 @@ const options = {
   },
 };
 
+//object로 만들기
+//movie
 export const moviesAPI = {
   trending: () =>
     fetch(`${BASE_URL}/trending/movie/week?language=KR`, options).then((res) =>
@@ -48,4 +50,20 @@ export const moviesAPI = {
       `${BASE_URL}/movie/now_playing?language=KR&page=1&region=KR`,
       options
     ).then((res) => res.json()),
-}; //object로 만들기
+};
+
+//tv
+export const tvAPI = {
+  trending: () =>
+    fetch(`${BASE_URL}/trending/tv/week?language=KR`, options).then((res) =>
+      res.json()
+    ),
+  airingToday: () =>
+    fetch(`${BASE_URL}/tv/airing_today?language=KR`, options).then((res) =>
+      res.json()
+    ),
+  topRated: () =>
+    fetch(`${BASE_URL}/tv/top_rated?language=KR`, options).then((res) =>
+      res.json()
+    ),
+};
