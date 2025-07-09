@@ -1,5 +1,5 @@
-import { StyleSheet, ScrollView, useColorScheme } from "react-native";
-import { useQuery } from "@tanstack/react-query";
+import { ScrollView, useColorScheme, RefreshControl } from "react-native";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { tvAPI } from "../api";
 import Loader from "../components/Loader";
 import colors from "../colors";
@@ -7,19 +7,37 @@ import HList from "../components/HList";
 
 export default function Tv() {
   const isDark = useColorScheme() === "dark";
+  const queryClient = useQueryClient();
 
-  const { isLoading: todayLoading, data: todayData } = useQuery({
+  const {
+    isLoading: todayLoading,
+    data: todayData,
+    isRefetching: todayRefetching,
+  } = useQuery({
     queryKey: ["tv", "today"],
     queryFn: tvAPI.airingToday,
   });
-  const { isLoading: topLoading, data: topData } = useQuery({
+  const {
+    isLoading: topLoading,
+    data: topData,
+    isRefetching: topRefetching,
+  } = useQuery({
     queryKey: ["tv", "top"],
     queryFn: tvAPI.topRated,
   });
-  const { isLoading: trendingLoading, data: trendingData } = useQuery({
+  const {
+    isLoading: trendingLoading,
+    data: trendingData,
+    isRefetching: trendingRefetching,
+  } = useQuery({
     queryKey: ["tv", "trending"],
     queryFn: tvAPI.trending,
   });
+
+  const onRefresh = () => {
+    queryClient.refetchQueries({ queryKey: ["tv"] });
+  };
+  const refreshing = todayRefetching || topRefetching || trendingRefetching;
 
   const loading = todayLoading || topLoading || trendingLoading;
   if (loading) {
@@ -28,6 +46,9 @@ export default function Tv() {
 
   return (
     <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
       contentContainerStyle={{ paddingVertical: 30 }}
       style={{ backgroundColor: isDark ? colors.black : "white" }}
     >

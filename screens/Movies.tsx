@@ -11,7 +11,6 @@ import {
 import Swiper from "react-native-swiper";
 import colors from "../colors";
 import Slide from "../components/Slides";
-import VMedia from "../components/VMedia";
 import HMedia from "../components/HMedia";
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Movie, MovieResponse, moviesAPI } from "../api";
@@ -65,14 +64,6 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
     //movies 키를 가진 쿼리들은 전부 refetch 할 수 있다는 것
   };
 
-  const renderVMedia = ({ item }: { item: Movie }) => (
-    <VMedia
-      posterPath={item.poster_path}
-      originalTitle={item.original_title}
-      voteAverage={item.vote_average}
-    />
-  );
-
   const renderHMedia = ({ item }: { item: Movie }) => (
     <HMedia
       posterPath={item.poster_path}
@@ -92,7 +83,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   upcomingData ? (
     <FlatList
       onRefresh={onRefresh}
-      refreshing={refreshing}
+      refreshing={refreshing} //Flatlist에선 이걸로 아래로 땡기면 새로고침 할 수 있게 함
       /*FlatList Header에 FlatList를 render하는 FlatList의 구조인거임 */
       ListHeaderComponent={
         <>
