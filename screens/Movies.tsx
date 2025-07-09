@@ -16,6 +16,7 @@ import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Movie, MovieResponse, moviesAPI } from "../api";
 import Loader from "../components/Loader";
 import HList from "../components/HList";
+import { useState } from "react";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -27,41 +28,36 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   -> 아마 이미지는 다시 로드해야 할 지두
   tanstack query와 'unmountOnBlur: true'를 같이 쓰면 메모리도 아끼고 굳~*/
   const queryClient = useQueryClient(); //모든 쿼리들을 관리해요 #3.14 강의
-  const {
-    isLoading: nowPlayingLoading,
-    data: nowPlayingData,
-    isRefetching: isRefetchNowPlaying, //fetch 다시하는거 boolean으로
-  } = useQuery<MovieResponse>({
-    queryKey: [
-      "movies",
-      "nowPlaying",
-    ] /*query key가 필요한 이유: react Query가 가지고 있는 caching system 때문 
+  const [refreshing, setRefreshing] = useState(false);
+
+  const { isLoading: nowPlayingLoading, data: nowPlayingData } =
+    useQuery<MovieResponse>({
+      queryKey: [
+        "movies",
+        "nowPlaying",
+      ] /*query key가 필요한 이유: react Query가 가지고 있는 caching system 때문 
      -> nowPlaying이란 이름을 가진 쿼리가 캐시에 넣어진다~
      -> 그저 데이터를 cache에 저장하는 방식임
      -> query key는 반드시 배열이어야 함!!!
      */,
-    queryFn: moviesAPI.nowPlaying,
-  });
-  const {
-    isLoading: upcomingLoading,
-    data: upcomingData,
-    isRefetching: isRefetchUpcomingData,
-  } = useQuery<MovieResponse>({
-    queryKey: ["movies", "upcoming"],
-    queryFn: moviesAPI.upcoming,
-  });
-  const {
-    isLoading: trendingLoading,
-    data: trendingData,
-    isRefetching: isRefetchTrendingData,
-  } = useQuery<MovieResponse>({
-    queryKey: ["movies", "trending"],
-    queryFn: moviesAPI.trending,
-  });
+      queryFn: moviesAPI.nowPlaying,
+    });
+  const { isLoading: upcomingLoading, data: upcomingData } =
+    useQuery<MovieResponse>({
+      queryKey: ["movies", "upcoming"],
+      queryFn: moviesAPI.upcoming,
+    });
+  const { isLoading: trendingLoading, data: trendingData } =
+    useQuery<MovieResponse>({
+      queryKey: ["movies", "trending"],
+      queryFn: moviesAPI.trending,
+    });
 
   const onRefresh = async () => {
-    queryClient.refetchQueries({ queryKey: ["movies"] });
+    setRefreshing(true);
+    await queryClient.refetchQueries({ queryKey: ["movies"] });
     //movies 키를 가진 쿼리들은 전부 refetch 할 수 있다는 것
+    setRefreshing(false);
   };
 
   const renderHMedia = ({ item }: { item: Movie }) => (
@@ -74,13 +70,11 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   );
 
   const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
-  const refreshing =
-    isRefetchNowPlaying || isRefetchUpcomingData || isRefetchTrendingData;
 
   return loading ? (
     <Loader />
-  ) : /*FlatList는 ScrollView에 기반해서 만들어진 컴포넌트! */
-  upcomingData ? (
+  ) : upcomingData ? (
+    /*FlatList는 ScrollView에 기반해서 만들어진 컴포넌트! */
     <FlatList
       onRefresh={onRefresh}
       refreshing={refreshing} //Flatlist에선 이걸로 아래로 땡기면 새로고침 할 수 있게 함
