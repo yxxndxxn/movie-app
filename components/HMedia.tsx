@@ -1,5 +1,6 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import Poster from "./Poster";
+import { useNavigation } from "@react-navigation/native";
 
 interface HMediaProps {
   posterPath: string;
@@ -14,23 +15,31 @@ const HMedia: React.FC<HMediaProps> = ({
   releaseDate,
   overview,
 }) => {
+  const navigation = useNavigation();
+  const goToDetail = () => {
+    navigation.navigate("Stack", { screen: "Detail" });
+  };
   return (
-    <View style={styles.HMovie}>
-      <Poster path={posterPath} />
-      <View style={styles.Hcolumn}>
-        <Text style={styles.Title}>{originalTitle}</Text>
-        {releaseDate ? (
-          <Text style={styles.Date}>
-            {new Date(releaseDate).toLocaleDateString("ko")} 개봉
-          </Text>
-        ) : null}
-        {overview && (
-          <Text style={styles.OverView}>
-            {overview.length > 120 ? `${overview.slice(0, 120)}...` : overview}
-          </Text>
-        )}
+    <TouchableOpacity onPress={goToDetail}>
+      <View style={styles.HMovie}>
+        <Poster path={posterPath} />
+        <View style={styles.Hcolumn}>
+          <Text style={styles.Title}>{originalTitle}</Text>
+          {releaseDate ? (
+            <Text style={styles.Date}>
+              {new Date(releaseDate).toLocaleDateString("ko")} 개봉
+            </Text>
+          ) : null}
+          {overview && (
+            <Text style={styles.OverView}>
+              {overview.length > 120
+                ? `${overview.slice(0, 120)}...`
+                : overview}
+            </Text>
+          )}
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

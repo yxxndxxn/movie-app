@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Poster from "./Poster";
 import Votes from "./Votes";
+import { useNavigation } from "@react-navigation/native";
 
 interface VMediaProps {
   posterPath: string;
@@ -13,16 +14,22 @@ const VMedia: React.FC<VMediaProps> = ({
   originalTitle,
   voteAverage,
 }) => {
+  const navigation = useNavigation();
+  const goToDetail = () => {
+    navigation.navigate("Stack", { screen: "Detail" });
+  };
   return (
-    <View>
-      <Poster path={posterPath} />
-      <Text style={styles.Title}>
-        {originalTitle.length > 20
-          ? `${originalTitle.slice(0, 20)}...`
-          : originalTitle}
-      </Text>
-      <Votes votes={voteAverage} />
-    </View>
+    <TouchableOpacity onPress={goToDetail}>
+      <View>
+        <Poster path={posterPath} />
+        <Text style={styles.Title}>
+          {originalTitle.length > 20
+            ? `${originalTitle.slice(0, 20)}...`
+            : originalTitle}
+        </Text>
+        <Votes votes={voteAverage} />
+      </View>
+    </TouchableOpacity>
   );
 };
 

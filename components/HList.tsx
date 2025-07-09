@@ -38,7 +38,7 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 600,
     marginLeft: 30,
-    marginBottom: 10,
+    marginBottom: 15,
   },
   HListSeperator: {
     width: 20,

@@ -1,9 +1,17 @@
 import * as React from "react";
-import { View, Text, Image, StyleSheet, useColorScheme } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  useColorScheme,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { makeImgPath } from "../utils";
 import { BlurView } from "@react-native-community/blur";
 import Poster from "./Poster";
 import Votes from "./Votes";
+import { useNavigation } from "@react-navigation/native";
 
 interface SlideProps {
   backdropPath: string;
@@ -21,24 +29,33 @@ const Slide: React.FC<SlideProps> = ({
   voteAverage,
 }) => {
   const isDark = useColorScheme() === "dark";
-
+  const navigation = useNavigation();
+  const goToDetail = () => {
+    navigation.navigate("Stack", { screen: "Detail" });
+  };
   return (
-    <View style={{ flex: 1 }}>
-      <Image
-        style={StyleSheet.absoluteFill}
-        source={{ uri: makeImgPath(backdropPath) }}
-      />
-      <BlurView blurType="dark" blurAmount={8} style={StyleSheet.absoluteFill}>
-        <View style={styles.Wrapper}>
-          <Poster path={posterPath} />
-          <View style={styles.Column}>
-            <Text style={styles.Title}>{originalTitle}</Text>
-            <Text style={styles.OverView}>{overview.slice(0, 100)}...</Text>
-            <Votes votes={voteAverage} />
+    <TouchableWithoutFeedback onPress={goToDetail}>
+      <View style={{ flex: 1 }}>
+        <Image
+          style={StyleSheet.absoluteFill}
+          source={{ uri: makeImgPath(backdropPath) }}
+        />
+        <BlurView
+          blurType="dark"
+          blurAmount={8}
+          style={StyleSheet.absoluteFill}
+        >
+          <View style={styles.Wrapper}>
+            <Poster path={posterPath} />
+            <View style={styles.Column}>
+              <Text style={styles.Title}>{originalTitle}</Text>
+              <Text style={styles.OverView}>{overview.slice(0, 100)}...</Text>
+              <Votes votes={voteAverage} />
+            </View>
           </View>
-        </View>
-      </BlurView>
-    </View>
+        </BlurView>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 export default Slide;
