@@ -4,41 +4,31 @@ import { tvAPI } from "../api";
 import Loader from "../components/Loader";
 import colors from "../colors";
 import HList from "../components/HList";
+import { useState } from "react";
 
 export default function Tv() {
   const isDark = useColorScheme() === "dark";
   const queryClient = useQueryClient();
+  const [refreshing, setRefreshing] = useState(false);
 
-  const {
-    isLoading: todayLoading,
-    data: todayData,
-    isRefetching: todayRefetching,
-  } = useQuery({
+  const { isLoading: todayLoading, data: todayData } = useQuery({
     queryKey: ["tv", "today"],
     queryFn: tvAPI.airingToday,
   });
-  const {
-    isLoading: topLoading,
-    data: topData,
-    isRefetching: topRefetching,
-  } = useQuery({
+  const { isLoading: topLoading, data: topData } = useQuery({
     queryKey: ["tv", "top"],
     queryFn: tvAPI.topRated,
   });
-  const {
-    isLoading: trendingLoading,
-    data: trendingData,
-    isRefetching: trendingRefetching,
-  } = useQuery({
+  const { isLoading: trendingLoading, data: trendingData } = useQuery({
     queryKey: ["tv", "trending"],
     queryFn: tvAPI.trending,
   });
 
-  const onRefresh = () => {
-    queryClient.refetchQueries({ queryKey: ["tv"] });
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await queryClient.refetchQueries({ queryKey: ["tv"] });
+    setRefreshing(false);
   };
-  const refreshing = todayRefetching || topRefetching || trendingRefetching;
-
   const loading = todayLoading || topLoading || trendingLoading;
   if (loading) {
     return <Loader />;
