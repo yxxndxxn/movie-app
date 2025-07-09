@@ -16,6 +16,7 @@ import HMedia from "../components/HMedia";
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Movie, MovieResponse, moviesAPI } from "../api";
 import Loader from "../components/Loader";
+import HList from "../components/HList";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -119,28 +120,9 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
               />
             ))}
           </Swiper>
-
-          <View style={styles.ListContainer}>
-            <Text style={styles.ListTitle}>Trending Movies</Text>
-            {trendingData ? (
-              <FlatList
-                contentContainerStyle={{ paddingHorizontal: 30 }}
-                horizontal
-                //keyExtractor: item을 받아오는데, item의 어떤 부분을 key로 삼을 건지 반환하는 역할
-                //근데 난 이거 안 넣어도 작동 잘 되는듯ㅠㅠ
-                keyExtractor={(item) => item.id + ""}
-                showsHorizontalScrollIndicator={false}
-                data={trendingData.results}
-                //gap 대신 ItemSeparatorComponent-> 사이에 컴포넌트를 넣어주는 역할.? 여기서는 공백이 컴포넌트로 되는거지
-                //그리고 마지막에는 들어가지 않게 해서 gap과 똑같이 요소 사이에만 적용됨!
-                //함수가 들어가기 때문에, 공백 말고도 이미지나 원하는 무언가를 넣을 수 있어서 숱한 디자인 변경시에 용이함
-                ItemSeparatorComponent={() => (
-                  <View style={styles.VSeperator} />
-                )} //그니까 이게 gap인거지 안에 공백 말고도 무엇이든 넣을 수 있는 gap..
-                renderItem={renderVMedia}
-              />
-            ) : null}
-          </View>
+          {trendingData ? (
+            <HList title="Trending Movies" data={trendingData.results} />
+          ) : null}
 
           <Text style={styles.ListTitle}>Coming soon</Text>
         </>
