@@ -51,6 +51,7 @@ export const moviesAPI = {
       options
     ).then((res) => res.json()),
 
+  //영화 검색
   //fetcher가 queryKey에 접근 권한을 얻게 됨..(search)
   search: ({ queryKey }) => {
     const [_, query] = queryKey; //두 번째꺼를 달라.. 하는겨
@@ -78,4 +79,15 @@ export const tvAPI = {
     fetch(`${BASE_URL}/tv/top_rated?language=KR`, options).then((res) =>
       res.json()
     ),
+  //tv 검색
+  search: ({ queryKey }) => {
+    const [_, query] = queryKey; //두 번째꺼를 달라.. 하는겨
+    console.log(query); //찍어보면 사용자가 입력한 값이 나와
+
+    return fetch(
+      //여기서 query는 text input에서 온 거임
+      `${BASE_URL}/search/tv?language=KR&page=1&query=${query}&region=KR`,
+      options
+    ).then((res) => res.json());
+  },
 };
