@@ -4,6 +4,8 @@ import colors from "../colors";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { moviesAPI, tvAPI } from "../api";
+import Loader from "../components/Loader";
+import HList from "../components/HList";
 
 export default function Search() {
   const isDark = useColorScheme() === "dark";
@@ -58,7 +60,14 @@ export default function Search() {
         returnKeyType="search" //ios
         onChangeText={onChangeText}
         onSubmitEditing={onSubmit}
-      ></TextInput>
+      />
+
+      {/*로딩중 띄우기..*/}
+      {moviesLoading || tvLoading ? <Loader /> : null}
+      {moviesData ? (
+        <HList title="Movies Results" data={moviesData.results} />
+      ) : null}
+      {tvData ? <HList title="Tv Results" data={tvData.results} /> : null}
     </ScrollView>
   );
 }
@@ -72,6 +81,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     width: "90%",
     marginVertical: 10,
+    marginBottom: 40,
     alignSelf: "center", //SearchBar 컴포넌트 자체를 부모 안에서 가운데 정렬
   },
 });
