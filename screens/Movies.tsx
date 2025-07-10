@@ -110,13 +110,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
             <HList title="Trending Movies" data={trendingData.results} />
           ) : null}
 
-          {/* <Text style={styles.ListTitle}>Coming soon</Text> */}
-          <CustomText w="bold" style={{ color: "blue" }}>
-            커스텀 텍스트
-          </CustomText>
-          {/* <CustomText w="bold" style={styles.ListTitle}>
-            Coming soon
-          </CustomText> */}
+          <Text style={styles.ListTitle}>Coming soon</Text>
         </>
       }
       style={{ backgroundColor: isDark ? colors.black : "white" }}
