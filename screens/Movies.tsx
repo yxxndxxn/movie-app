@@ -17,6 +17,7 @@ import { Movie, MovieResponse, moviesAPI } from "../api";
 import Loader from "../components/Loader";
 import HList from "../components/HList";
 import { useState } from "react";
+import CustomText from "../CustomText";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -109,7 +110,13 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
             <HList title="Trending Movies" data={trendingData.results} />
           ) : null}
 
-          <Text style={styles.ListTitle}>Coming soon</Text>
+          {/* <Text style={styles.ListTitle}>Coming soon</Text> */}
+          <CustomText w="bold" style={{ color: "blue" }}>
+            커스텀 텍스트
+          </CustomText>
+          {/* <CustomText w="bold" style={styles.ListTitle}>
+            Coming soon
+          </CustomText> */}
         </>
       }
       style={{ backgroundColor: isDark ? colors.black : "white" }}
