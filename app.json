@@ -3,9 +3,14 @@
     "name": "MovieApp",
     "slug": "MovieApp",
     "version": "1.0.0",
-    "plugins": ["expo-font"],
+    "plugins": [
+      "expo-font"
+    ],
     "web": {
       "bundler": "metro"
+    },
+    "android": {
+      "package": "com.yoondain.MovieApp"
     }
   }
 }

@@ -1,4 +1,4 @@
-package com.movieapp
+package com.yoondain.MovieApp
 
 import android.app.Application
 import android.content.res.Configuration
