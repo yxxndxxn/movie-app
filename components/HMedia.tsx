@@ -17,7 +17,18 @@ const HMedia: React.FC<HMediaProps> = ({
 }) => {
   const navigation = useNavigation();
   const goToDetail = () => {
-    navigation.navigate("Stack", { screen: "Detail" });
+    //이게 서로 다른 Navigator에 있는 screen으로 navigate하는 방법ㅇ..
+    //"Stack"에 있는 "Detail" screen으로 navigate 하는겨!
+    //만약 같은 Navigator에 있는 screen으로 navigate 하고 싶으면
+    // navigation.navigate("Stack", {params:{})
+    //이케 하면 됨^^ (screen 안써도 된다.. 머 그런...)
+
+    navigation.navigate("Stack", {
+      screen: "Detail",
+      params: {
+        originalTitle,
+      },
+    });
   };
   return (
     <TouchableOpacity onPress={goToDetail}>
