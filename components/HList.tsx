@@ -21,6 +21,7 @@ const HList: React.FC<HListProps> = ({ title, data }) => (
           posterPath={item.poster_path}
           originalTitle={item.original_title ?? item.original_name}
           voteAverage={item.vote_average}
+          fullData={item} //item은 FlatList가 data의 각 아이템들을 참조하기 위해 사용하는 이름임
         />
       )}
     />

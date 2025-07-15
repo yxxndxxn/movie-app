@@ -1,12 +1,14 @@
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import Poster from "./Poster";
 import { useNavigation } from "@react-navigation/native";
+import { Movie } from "../api";
 
 interface HMediaProps {
   posterPath: string;
   originalTitle: string;
   releaseDate?: string;
   overview?: string;
+  fullData: Movie;
 }
 
 const HMedia: React.FC<HMediaProps> = ({
@@ -14,6 +16,7 @@ const HMedia: React.FC<HMediaProps> = ({
   originalTitle,
   releaseDate,
   overview,
+  fullData,
 }) => {
   const navigation = useNavigation();
   const goToDetail = () => {
@@ -26,7 +29,7 @@ const HMedia: React.FC<HMediaProps> = ({
     navigation.navigate("Stack", {
       screen: "Detail",
       params: {
-        originalTitle,
+        ...fullData,
       },
     });
   };

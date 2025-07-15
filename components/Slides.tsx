@@ -12,6 +12,7 @@ import { BlurView } from "@react-native-community/blur";
 import Poster from "./Poster";
 import Votes from "./Votes";
 import { useNavigation } from "@react-navigation/native";
+import { Movie } from "../api";
 
 interface SlideProps {
   backdropPath: string;
@@ -19,6 +20,7 @@ interface SlideProps {
   originalTitle: string;
   voteAverage: number;
   overview: string;
+  fullData: Movie;
 }
 
 const Slide: React.FC<SlideProps> = ({
@@ -27,6 +29,7 @@ const Slide: React.FC<SlideProps> = ({
   originalTitle,
   overview,
   voteAverage,
+  fullData,
 }) => {
   const isDark = useColorScheme() === "dark";
   const navigation = useNavigation();
@@ -34,7 +37,7 @@ const Slide: React.FC<SlideProps> = ({
     navigation.navigate("Stack", {
       screen: "Detail",
       params: {
-        originalTitle,
+        ...fullData,
       },
     });
   };
